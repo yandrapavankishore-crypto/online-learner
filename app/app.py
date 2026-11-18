@@ -69,7 +69,7 @@ def home():
     </head>
     <body>
       <header>
-        <h1>Online Learning Platform</h1>
+        <h1>Kishore Learning Platform</h1>
         <p>Cloud Computing | DevOps | Azure</p>
       </header>
       <main>
