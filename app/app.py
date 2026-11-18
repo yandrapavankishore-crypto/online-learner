@@ -54,7 +54,7 @@ def home():
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Online Learning Platform</title>
+      <title>YBNP Kishore Learning Platform</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
         body {font-family:Arial,sans-serif;background:#f1f5f9;margin:0;color:#172033}
