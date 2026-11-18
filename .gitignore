@@ -1,0 +1,44 @@
+# Terraform state and local provider files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+crash.log
+crash.*.log
+
+# Secrets and credentials
+*.pem
+*.key
+.env
+.env.*
+*.secret
+kubeconfig
+admin.conf
+**/secrets.yaml
+**/*secret*.yml
+**/*secret*.yaml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Ansible
+*.retry
+
+# Sensitive files
+*.pem
+*.key
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+kubeconfig
+admin.conf
+.env
+.env.*
+__pycache__/
+*.pyc

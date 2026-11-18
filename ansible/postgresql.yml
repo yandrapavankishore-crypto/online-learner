@@ -1,0 +1,89 @@
+
+---
+- name: Configure PostgreSQL database server
+  hosts: database
+  become: true
+
+  vars_prompt:
+    - name: db_password
+      prompt: "Enter password for learninguser"
+      private: true
+      confirm: true
+
+  tasks:
+    - name: Install PostgreSQL and Python driver
+      apt:
+        name:
+          - postgresql
+          - postgresql-contrib
+          - python3-psycopg2
+        state: present
+        update_cache: true
+
+    - name: Enable PostgreSQL service
+      systemd:
+        name: postgresql
+        enabled: true
+        state: started
+
+    - name: Create application database user
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: learninguser
+        password: "{{ db_password }}"
+        role_attr_flags: LOGIN
+        encrypted: true
+        state: present
+      no_log: true
+
+    - name: Create application database
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: learningdb
+        owner: learninguser
+        encoding: UTF8
+        state: present
+
+    - name: Allow PostgreSQL to listen on network
+      lineinfile:
+        path: /etc/postgresql/16/main/postgresql.conf
+        regexp: '^\s*#?\s*listen_addresses\s*='
+        line: "listen_addresses = '172.31.32.213,localhost'"
+      notify: Restart PostgreSQL
+
+    - name: Allow Worker 1 database access
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/16/main/pg_hba.conf
+        contype: host
+        databases: learningdb
+        users: learninguser
+        source: 172.31.32.211/32
+        method: scram-sha-256
+      notify: Reload PostgreSQL
+
+    - name: Allow Worker 2 database access
+      community.postgresql.postgresql_pg_hba:
+        dest: /etc/postgresql/16/main/pg_hba.conf
+        contype: host
+        databases: learningdb
+        users: learninguser
+        source: 172.31.32.212/32
+        method: scram-sha-256
+      notify: Reload PostgreSQL
+
+    - name: Ensure PostgreSQL is enabled
+      systemd:
+        name: postgresql
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart PostgreSQL
+      systemd:
+        name: postgresql
+        state: restarted
+
+    - name: Reload PostgreSQL
+      systemd:
+        name: postgresql
+        state: reloaded
